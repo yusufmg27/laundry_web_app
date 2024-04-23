@@ -6,12 +6,12 @@ use App\Http\Controllers\CreateCustomerController;
 use App\Http\Controllers\CreateServiceController;
 use App\Http\Controllers\CreatePaymentController;
 use App\Http\Controllers\CreateOrderController;
+use App\Http\Controllers\WelcomeController;
 use App\Http\Middleware\CheckRole;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [WelcomeController::class, 'index'])
+->name('welcome.index');
 
 Route::middleware('auth')->group(function () {
 
@@ -25,6 +25,13 @@ Route::middleware('auth')->group(function () {
         Route::get('customer/edit', [CreateCustomerController::class, 'edit'])->name('customer.edit');
         Route::put('/customer/{id}', [CreateCustomerController::class, 'update'])->name('customer.update');
         Route::delete('/customer/destroy', [CreateCustomerController::class, 'destroy'])->name('customer.destroy');
+
+        Route::get('/order/create-order', [CreateOrderController::class, 'create'])
+        ->name('create.order');
+        Route::post('/order/create-order', [CreateOrderController::class, 'store']);
+        Route::get('order/edit', [CreateOrderController::class, 'edit'])->name('order.edit');
+        Route::put('/order/{id}', [CreateOrderController::class, 'update'])->name('order.update');
+        Route::delete('/order/destroy', [CreateOrderController::class, 'destroy'])->name('order.destroy');
 
     });
 
@@ -61,12 +68,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('order', [CreateOrderController::class, 'index'])
     ->name('order.index');
-    Route::get('/order/create-order', [CreateOrderController::class, 'create'])
-    ->name('create.order');
-    Route::post('/order/create-order', [CreateOrderController::class, 'store']);
-    Route::get('order/edit', [CreateOrderController::class, 'edit'])->name('order.edit');
-    Route::put('/order/{id}', [CreateOrderController::class, 'update'])->name('order.update');
-    Route::delete('/order/destroy', [CreateOrderController::class, 'destroy'])->name('order.destroy');
     
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
