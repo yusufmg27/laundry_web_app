@@ -17,9 +17,13 @@ class Order extends Model
     protected $fillable = [
         'order_code',
         'quantity',
-        'costumer_id',
+        'customer_id',
         'service_id',
+        'payment_method',
+        'payment_status',
         'status',
+        'payment',
+        'change',
         'total',
     ];
 }

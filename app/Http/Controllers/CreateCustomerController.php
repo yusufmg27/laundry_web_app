@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Customer;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,7 +13,7 @@ use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 use DataTables; // tambahkan ini
 
-class CreateUserController extends Controller
+class CreateCustomerController extends Controller
 {
     /**
     * Display the registration view.
@@ -21,7 +21,7 @@ class CreateUserController extends Controller
     public function index(Request $request)
     {
         if(\request()->ajax()){
-            $data = User::latest()->get();
+            $data = Customer::latest()->get();
             return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('action', function($row){
@@ -32,27 +32,27 @@ class CreateUserController extends Controller
             ->make(true);
         }
         
-        return view('pages.users.users');
+        return view('pages.customer.customer');
     }
     
     public function create(): View
     {
-        return view('pages.users.users-create');
+        return view('pages.customer.customer-create');
     }
     
     // Metode untuk menampilkan halaman edit
     public function edit(Request $request)
     {
-        $user = User::find($request->id);
-        return view('pages.users.users-edit', compact('user'));
+        $customer = Customer::find($request->id);
+        return view('pages.customer.customer-edit', compact('customer'));
     }
     
     public function destroy(Request $request)
     {
-        $user = User::findOrFail($request->id);
-        $user->delete();
+        $customer = Customer::findOrFail($request->id);
+        $customer->delete();
         
-        return response()->json(['success' => 'User deleted successfully.']);
+        return response()->json(['success' => 'customer deleted successfully.']);
     }
     
     /**
@@ -64,37 +64,33 @@ class CreateUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'role' => ['required'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'address' => ['required', 'string', 'max:255'],
+            'number' => ['required', 'numeric', 'digits_between:1,16'],
         ]);
         
-        $user = User::create([
+        $user = Customer::create([
             'name' => $request->name,
-            'role' => $request->role,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'address' => $request->address,
+            'number' => $request->number,
         ]);
-        
-        event(new Registered($user));
-        
-        return redirect(route('users.index', absolute: false));
+                
+        return redirect(route('customer.index', absolute: false));
     }
     
     public function update(Request $request, $id)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'role' => ['required'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$id],
+            'address' => ['required', 'string', 'max:255'],
+            'number' => ['required', 'numeric', 'digits_between:1,16'],
         ]);
         
-        $user = User::findOrFail($id);
+        $user = Customer::findOrFail($id);
         $user->name = $request->name;
-        $user->role = $request->role;
-        $user->email = $request->email;
+        $user->address = $request->address;
+        $user->number = $request->number;
         $user->save();
         
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('customer.index')->with('success', 'User updated successfully.');
     }
 }
